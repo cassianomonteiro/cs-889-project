@@ -52,10 +52,7 @@
 
 package com.efortin.frozenbubble;
 
-import org.jfedor.frozenbubble.FrozenBubble;
-import org.jfedor.frozenbubble.R;
-import org.jfedor.frozenbubble.SoundManager;
-
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
@@ -63,9 +60,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -80,6 +80,10 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 import com.peculiargames.andmodplug.PlayerThread;
+
+import org.jfedor.frozenbubble.FrozenBubble;
+import org.jfedor.frozenbubble.R;
+import org.jfedor.frozenbubble.SoundManager;
 
 public class HomeScreen extends Activity {
   /*
@@ -1026,6 +1030,19 @@ public class HomeScreen extends Activity {
   }
 
   @Override
+  protected void onStart() {
+    super.onStart();
+
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+
+      ActivityCompat.requestPermissions(this,
+              new String[]{Manifest.permission.CAMERA},
+              0);
+    }
+  }
+
+  @Override
   public void onPause() {
     super.onPause();
     if (myModPlayer != null) {
@@ -1035,7 +1052,7 @@ public class HomeScreen extends Activity {
 
   @Override
   public void onResume() {
-    super.onPause();
+    super.onResume();
     if (myModPlayer != null) {
       restoreGamePrefs();
       if (myPreferences.musicOn)

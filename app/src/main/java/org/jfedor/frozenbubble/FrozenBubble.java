@@ -74,17 +74,6 @@
 
 package org.jfedor.frozenbubble;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Random;
-
-import org.jfedor.frozenbubble.GameScreen.eventEnum;
-import org.jfedor.frozenbubble.GameScreen.stateEnum;
-import org.jfedor.frozenbubble.GameView.GameListener;
-import org.jfedor.frozenbubble.GameView.GameThread;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -94,6 +83,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
+import android.hardware.Camera;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.net.Uri;
@@ -101,6 +91,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -109,6 +100,8 @@ import android.view.Surface;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.efortin.frozenbubble.AccelerometerManager;
@@ -121,6 +114,17 @@ import com.efortin.frozenbubble.ScrollingCredits;
 import com.efortin.frozenbubble.VirtualInput;
 import com.peculiargames.andmodplug.PlayerThread;
 import com.peculiargames.andmodplug.PlayerThread.PlayerListener;
+
+import org.jfedor.frozenbubble.GameScreen.eventEnum;
+import org.jfedor.frozenbubble.GameScreen.stateEnum;
+import org.jfedor.frozenbubble.GameView.GameListener;
+import org.jfedor.frozenbubble.GameView.GameThread;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Random;
 
 public class FrozenBubble extends Activity
   implements GameListener,
@@ -809,11 +813,68 @@ public class FrozenBubble extends Activity
                              opponentId,
                              gameLocale,
                              arcadeGame);
-    setContentView(mGameView);
+
+    mGameView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT));
+
+    // Changed from original
+    // Instead of a single view, set to the FlowLayout
+    // so we can stack views on top of each other
+//    setContentView(mGameView);
+    setContentView(R.layout.activity_camera);
+
+    addBackgroundCamera();
+
+    // Add game on top of background camera
+    FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+    preview.addView(mGameView);
+    preview.bringChildToFront(mGameView);
+
     mGameView.setGameListener(this);
     mGameThread = mGameView.getThread();
     mGameThread.restoreState(map);
     mGameView.requestFocus();
+  }
+
+  private Camera mCamera;
+  private CameraPreview mPreview;
+
+  private void addBackgroundCamera() {
+
+    // Create an instance of Camera
+    mCamera = getCameraInstance();
+
+    // Create our Preview view and set it as the content of our activity.
+    mPreview = new CameraPreview(this, mCamera);
+    mPreview.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT));
+    FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+    preview.addView(mPreview);
+  }
+
+  /** A safe way to get an instance of the Camera object. */
+  private Camera getCameraInstance(){
+    Camera c = null;
+    releaseCamera();
+    try {
+      c = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK); // attempt to get a Camera instance
+    }
+    catch (Exception e){
+      // Camera is not available (in use or does not exist)
+      Log.d(TAG, "Error getting camera: " + e.getMessage());
+    }
+    return c; // returns null if camera is unavailable
+  }
+
+  private void releaseCamera(){
+
+    FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+    preview.removeAllViews();
+
+    if (mCamera != null){
+      mCamera.release();        // release the camera for other applications
+      mCamera = null;
+    }
   }
 
   @Override
@@ -928,6 +989,10 @@ public class FrozenBubble extends Activity
    * Pause the game.
    */
   private void pause() {
+
+    // release the camera immediately on pause event
+    releaseCamera();
+
     if (mGameThread != null)
       mGameThread.pause();
 

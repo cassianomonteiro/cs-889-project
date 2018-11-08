@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "org.jfedor.frozenbubble"
-        minSdkVersion 12
+        minSdkVersion 14
         targetSdkVersion 26
 
         ndk {
@@ -25,4 +25,9 @@ android {
             path file('src/main/jni/Android.mk')
         }
     }
+}
+
+dependencies {
+    implementation 'com.android.support:appcompat-v7:26.+'
+    implementation 'com.android.support.constraint:constraint-layout:+'
 }

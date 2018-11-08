@@ -74,21 +74,6 @@
 
 package org.jfedor.frozenbubble;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Vector;
-
-import org.gsanson.frozenbubble.MalusBar;
-import org.jfedor.frozenbubble.GameScreen.eventEnum;
-import org.jfedor.frozenbubble.GameScreen.gameEnum;
-import org.jfedor.frozenbubble.GameScreen.stateEnum;
-import org.jfedor.frozenbubble.GameView.NetGameInterface.NetworkStatus;
-import org.jfedor.frozenbubble.GameView.NetGameInterface.RemoteInterface;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -97,6 +82,10 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.AttributeSet;
@@ -114,6 +103,21 @@ import com.efortin.frozenbubble.NetworkManager.GameFieldData;
 import com.efortin.frozenbubble.NetworkManager.PlayerAction;
 import com.efortin.frozenbubble.NetworkManager.connectEnum;
 import com.efortin.frozenbubble.VirtualInput;
+
+import org.gsanson.frozenbubble.MalusBar;
+import org.jfedor.frozenbubble.GameScreen.eventEnum;
+import org.jfedor.frozenbubble.GameScreen.gameEnum;
+import org.jfedor.frozenbubble.GameScreen.stateEnum;
+import org.jfedor.frozenbubble.GameView.NetGameInterface.NetworkStatus;
+import org.jfedor.frozenbubble.GameView.NetGameInterface.RemoteInterface;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Vector;
 
 public class GameView extends SurfaceView
   implements SurfaceHolder.Callback {
@@ -1219,7 +1223,15 @@ public class GameView extends SurfaceView
       }
       if ((mDisplayDX > 0) || (mDisplayDY > 0)) {
         //Log.i("frozen-bubble", "Drawing black background.");
-        canvas.drawRGB(0, 0, 0);
+
+        // Changed form original. Add a transparent background instead
+        // of a black canvas
+//        canvas.drawRGB(0, 0, 0);
+
+        Paint transparentPaint = new Paint();
+        transparentPaint.setColor(getResources().getColor(android.R.color.transparent));
+        transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        canvas.drawPaint(transparentPaint);
       }
       drawBackground(canvas);
       if (mFrozenGame1 != null) {
@@ -1548,8 +1560,11 @@ public class GameView extends SurfaceView
     }
 
     private void drawBackground(Canvas c) {
-      Sprite.drawImage(mBackground, 0, 0, c,
-                       mDisplayScale, mDisplayDX, mDisplayDY);
+      // Changed from original
+      // Prevent the original background image to be drawn
+//      Sprite.drawImage(mBackground, 0, 0, c,
+//                       mDisplayScale, mDisplayDX, mDisplayDY);
+
       if (numPlayers > 1) {
         Sprite.drawImage(mBackButton, BACK_2P_X, BACK_2P_Y, c,
                          mDisplayScale, mDisplayDX, mDisplayDY);
@@ -2953,7 +2968,9 @@ public class GameView extends SurfaceView
     mContext = context;
     this.gameLocale = gameLocale;
     this.numPlayers = numPlayers;
+    this.setZOrderOnTop(true);    // necessary for transparent
     SurfaceHolder holder = getHolder();
+    holder.setFormat(PixelFormat.TRANSPARENT);
     holder.addCallback(this);
     mOpponent = null;
 
