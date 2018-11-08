@@ -79,6 +79,8 @@
     "\nAll songs downloaded from:\n"
     "http://modarchive.org/\n\n\n"
     "\n\n\nThank You For Playing!"</string>
+    <string name="participant">Participant #</string>
+    <string name="run">Run #</string>
     <string-array name="shoot_mode_array">
         <item>Aim Then Shoot</item>
         <item>Point To Shoot</item>
@@ -93,4 +95,7 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

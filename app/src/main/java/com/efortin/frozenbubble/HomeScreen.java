@@ -85,7 +85,7 @@ import org.jfedor.frozenbubble.FrozenBubble;
 import org.jfedor.frozenbubble.R;
 import org.jfedor.frozenbubble.SoundManager;
 
-public class HomeScreen extends Activity {
+public class HomeScreen extends Activity implements ParticipantInfoDialogFragment.ParticipantInfoDialogListener {
   /*
    * Provide unique IDs for the views associated with the relative
    * layout.  These are used to define relative view layout positions
@@ -110,21 +110,24 @@ public class HomeScreen extends Activity {
   private final static int BTN11_ID  = 112;
   private final static int BTN12_ID  = 113;
 
+  public final static String TAG          = "HomeScreen.java";
+
   private static int buttonSelPage1 = BTN1_ID;
   private static int buttonSelPage2 = BTN5_ID;
   private static int buttonSelPage3 = BTN9_ID;
   private static int buttonSelPage4 = BTN11_ID;
   private static int pageSelected   = 1;
 
-  private boolean        finished      = false;
-  private boolean        homeShown     = false;
-  private boolean        playerSave    = false;
-  private ImageView      myImageView   = null;
-  private RelativeLayout myLayout      = null;
-  private ModPlayer      myModPlayer   = null;
-  private Preferences    myPreferences = null;
-  private SoundManager   mSoundManager = null;
-  private Thread         splashThread  = null;
+  private boolean        finished         = false;
+  private boolean        homeShown        = false;
+  private boolean        playerSave       = false;
+  private boolean        backgroundCamera = false;
+  private ImageView      myImageView      = null;
+  private RelativeLayout myLayout         = null;
+  private ModPlayer      myModPlayer      = null;
+  private Preferences    myPreferences    = null;
+  private SoundManager   mSoundManager    = null;
+  private Thread         splashThread     = null;
 
   /**
    * Given that we are using a relative layout for the home screen in
@@ -250,7 +253,7 @@ public class HomeScreen extends Activity {
          */
         startFrozenBubble(VirtualInput.PLAYER1, 1,
                           FrozenBubble.HUMAN,
-                          FrozenBubble.LOCALE_LOCAL, false, true, false);
+                          FrozenBubble.LOCALE_LOCAL, false, true, false, "", "");
       }
     });
     continueButton.setOnTouchListener(new Button.OnTouchListener(){
@@ -470,7 +473,7 @@ public class HomeScreen extends Activity {
 //     * Add view to layout.
 //     */
 //    myLayout.addView(gameExtrasButton, myParams);
-    
+
     /*
      * Construct the regular game button.
      */
@@ -479,12 +482,8 @@ public class HomeScreen extends Activity {
       public void onClick(View v){
         buttonSelPage1 = BTN2_ID;
         mSoundManager.playSound("stick", R.raw.stick);
-        /*
-         * Process the button tap and start/resume a 1 player game.
-         */
-        startFrozenBubble(VirtualInput.PLAYER1, 1,
-                FrozenBubble.HUMAN,
-                FrozenBubble.LOCALE_LOCAL, false, false, true);
+        backgroundCamera = true;
+        showParticipantInfoDialog();
       }
     });
     cameraGameButton.setOnTouchListener(new Button.OnTouchListener(){
@@ -522,13 +521,8 @@ public class HomeScreen extends Activity {
       public void onClick(View v){
         buttonSelPage1 = BTN1_ID;
         mSoundManager.playSound("stick", R.raw.stick);
-        /*
-         * Process the button tap and start/resume a 1 player arcade
-         * game.
-         */
-        startFrozenBubble(VirtualInput.PLAYER1, 1,
-                FrozenBubble.HUMAN,
-                FrozenBubble.LOCALE_LOCAL, true, false, false);
+        backgroundCamera = false;
+        showParticipantInfoDialog();
       }
     });
     regularGameButton.setOnTouchListener(new Button.OnTouchListener(){
@@ -558,6 +552,24 @@ public class HomeScreen extends Activity {
      * Add view to layout.
      */
     myLayout.addView(regularGameButton, myParams);
+  }
+
+  private void showParticipantInfoDialog() {
+    ParticipantInfoDialogFragment newFragment = new ParticipantInfoDialogFragment();
+    newFragment.show(getFragmentManager(), "run_info");
+  }
+
+  @Override
+  public void onDialogPositiveClick(String participantId, String runId) {
+    startFrozenBubble(VirtualInput.PLAYER1, 1,
+            FrozenBubble.HUMAN,
+            FrozenBubble.LOCALE_LOCAL, false, false, backgroundCamera,
+            participantId, runId);
+  }
+
+  @Override
+  public void onDialogNegativeClick() {
+    // Nothing done
   }
 
   /**
@@ -664,7 +676,7 @@ public class HomeScreen extends Activity {
          */
         startFrozenBubble(VirtualInput.PLAYER1, 2,
                           FrozenBubble.CPU,
-                          FrozenBubble.LOCALE_LOCAL, false, false, false);
+                          FrozenBubble.LOCALE_LOCAL, false, false, false, "", "");
       }
     });
     startCPUGameButton.setOnTouchListener(new Button.OnTouchListener(){
@@ -713,7 +725,7 @@ public class HomeScreen extends Activity {
            */
           startFrozenBubble(VirtualInput.PLAYER1, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_LOCAL, false, false, false);
+                            FrozenBubble.LOCALE_LOCAL, false, false, false, "", "");
         }
         else {
           numGamepadsDialog(numGamepads);
@@ -773,12 +785,12 @@ public class HomeScreen extends Activity {
         if (buttonSelPage2 == BTN6_ID) {
           startFrozenBubble(VirtualInput.PLAYER2, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_BLUETOOTH, false, false, false);
+                            FrozenBubble.LOCALE_BLUETOOTH, false, false, false, "", "");
         }
         else if (buttonSelPage2 == BTN7_ID) {
           startFrozenBubble(VirtualInput.PLAYER2, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_WIFI, false, false, false);
+                            FrozenBubble.LOCALE_WIFI, false, false, false, "", "");
         }
       }
     });
@@ -822,12 +834,12 @@ public class HomeScreen extends Activity {
         if (buttonSelPage2 == BTN6_ID) {
           startFrozenBubble(VirtualInput.PLAYER1, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_BLUETOOTH, false, false, false);
+                            FrozenBubble.LOCALE_BLUETOOTH, false, false, false, "", "");
         }
         else if (buttonSelPage2 == BTN7_ID) {
           startFrozenBubble(VirtualInput.PLAYER1, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_WIFI, false, false, false);
+                            FrozenBubble.LOCALE_WIFI, false, false, false, "", "");
         }
       }
     });
@@ -1246,6 +1258,8 @@ public class HomeScreen extends Activity {
    * @param arcadeGame - endless arcade game that scrolls new bubbles.
    * @param playerSave - load saved game information.
    * @param backgroundCamera
+   * @param participantId
+   * @param runId
    */
   private void startFrozenBubble(int myPlayerId,
                                  int numPlayers,
@@ -1253,7 +1267,9 @@ public class HomeScreen extends Activity {
                                  int gameLocale,
                                  boolean arcadeGame,
                                  boolean playerSave,
-                                 boolean backgroundCamera) {
+                                 boolean backgroundCamera,
+                                 String participantId,
+                                 String runId) {
     finished = true;
     /*
      * Since the default game activity creates its own player,
@@ -1271,6 +1287,8 @@ public class HomeScreen extends Activity {
     intent.putExtra("arcadeGame", (boolean)       arcadeGame);
     intent.putExtra("playerSave", (boolean)       playerSave);
     intent.putExtra("backgroundCamera", (boolean) backgroundCamera);
+    intent.putExtra("participantId", (String)     participantId);
+    intent.putExtra("runId", (String)             runId);
     startActivity(intent);
     /*
      * Terminate the splash screen activity.
