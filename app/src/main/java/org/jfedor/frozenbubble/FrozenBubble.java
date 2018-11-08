@@ -163,6 +163,7 @@ public class FrozenBubble extends Activity
   public static int     numPlayers = 0;
   public static int     opponentId = CPU;
   public static boolean playerSave = false;
+  public static boolean backgroundCamera = false;
 
   private static Preferences prefs = new Preferences();
 
@@ -812,7 +813,7 @@ public class FrozenBubble extends Activity
                              myPlayerId,
                              opponentId,
                              gameLocale,
-                             arcadeGame);
+                             arcadeGame, backgroundCamera);
 
     mGameView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT));
@@ -823,7 +824,8 @@ public class FrozenBubble extends Activity
 //    setContentView(mGameView);
     setContentView(R.layout.activity_camera);
 
-    addBackgroundCamera();
+    if (backgroundCamera)
+      addBackgroundCamera();
 
     // Add game on top of background camera
     FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
@@ -1388,6 +1390,8 @@ public class FrozenBubble extends Activity
         arcadeGame = intent.getBooleanExtra("arcadeGame", false);
       if (intent.hasExtra("playerSave"))
         playerSave = intent.getBooleanExtra("playerSave", false);
+      if (intent.hasExtra("backgroundCamera"))
+        backgroundCamera = intent.getBooleanExtra("backgroundCamera", false);
     }
 
     initGameOptions();

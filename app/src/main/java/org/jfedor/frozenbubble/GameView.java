@@ -126,10 +126,11 @@ public class GameView extends SurfaceView
   public static final int  GAMEFIELD_HEIGHT         = 480;
   public static final int  EXTENDED_GAMEFIELD_WIDTH = 640;
 
-  private boolean         levelStarted   = false;
-  private boolean         mBlankScreen   = false;
-  private boolean         muteKeyToggle  = false;
-  private boolean         pauseKeyToggle = false;
+  private boolean         levelStarted      = false;
+  private boolean         mBlankScreen      = false;
+  private boolean         muteKeyToggle     = false;
+  private boolean         pauseKeyToggle    = false;
+  private boolean         backgroundCamera  = false;
   private int             gameLocale;
   private int             numPlayers;
   private int             numPlayer1GamesWon;
@@ -1224,14 +1225,18 @@ public class GameView extends SurfaceView
       if ((mDisplayDX > 0) || (mDisplayDY > 0)) {
         //Log.i("frozen-bubble", "Drawing black background.");
 
-        // Changed form original. Add a transparent background instead
-        // of a black canvas
-//        canvas.drawRGB(0, 0, 0);
+        if (backgroundCamera) {
+          // Changed form original. Add a transparent background instead
+          // of a black canvas
+          Paint transparentPaint = new Paint();
+          transparentPaint.setColor(getResources().getColor(android.R.color.transparent));
+          transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+          canvas.drawPaint(transparentPaint);
+        }
+        else {
+          canvas.drawRGB(0, 0, 0);
+        }
 
-        Paint transparentPaint = new Paint();
-        transparentPaint.setColor(getResources().getColor(android.R.color.transparent));
-        transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-        canvas.drawPaint(transparentPaint);
       }
       drawBackground(canvas);
       if (mFrozenGame1 != null) {
@@ -1560,10 +1565,13 @@ public class GameView extends SurfaceView
     }
 
     private void drawBackground(Canvas c) {
+
       // Changed from original
-      // Prevent the original background image to be drawn
-//      Sprite.drawImage(mBackground, 0, 0, c,
-//                       mDisplayScale, mDisplayDX, mDisplayDY);
+      // Prevent the original background image to be drawn on camera mode
+      if (!backgroundCamera) {
+        Sprite.drawImage(mBackground, 0, 0, c,
+                mDisplayScale, mDisplayDX, mDisplayDY);
+      }
 
       if (numPlayers > 1) {
         Sprite.drawImage(mBackButton, BACK_2P_X, BACK_2P_Y, c,
@@ -2847,7 +2855,7 @@ public class GameView extends SurfaceView
     super(context, attrs);
     //Log.i("frozen-bubble", "GameView constructor");
     init(context, 1, (int) VirtualInput.PLAYER1, FrozenBubble.HUMAN,
-         FrozenBubble.LOCALE_LOCAL, FrozenBubble.arcadeGame, null, 0);
+         FrozenBubble.LOCALE_LOCAL, FrozenBubble.arcadeGame, null, 0, false);
   }
 
   /**
@@ -2861,7 +2869,7 @@ public class GameView extends SurfaceView
     //Log.i("frozen-bubble", "GameView constructor");
     init(context, 1, (int) VirtualInput.PLAYER1, FrozenBubble.HUMAN,
          FrozenBubble.LOCALE_LOCAL, FrozenBubble.arcadeGame, levels,
-         startingLevel);
+         startingLevel, false);
   }
 
   /**
@@ -2882,7 +2890,30 @@ public class GameView extends SurfaceView
                   boolean arcadeGame) {
     super(context);
     //Log.i("frozen-bubble", "GameView constructor");
-    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0);
+    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0, false);
+  }
+
+  /**
+   * <code>GameView</code> class constructor.
+   * @param context - the application context.
+   * @param numPlayers - the number of players (1 or 2).
+   * @param myPlayerId - the local player ID (1 or 2).
+   * @param opponentId - the opponent type ID, human or CPU.
+   * @param gameLocale - the game topology, which can be either local,
+   * or distributed over various network types.
+   * @param arcadeGame - arcade game mode flag.
+   * @param backgroundCamera - camera on background flag.
+   */
+  public GameView(Context context,
+                  int numPlayers,
+                  int myPlayerId,
+                  int opponentId,
+                  int gameLocale,
+                  boolean arcadeGame,
+                  boolean backgroundCamera) {
+    super(context);
+    //Log.i("frozen-bubble", "GameView constructor");
+    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0, backgroundCamera);
   }
 
   private boolean checkImmediateAction() {
@@ -2952,10 +2983,11 @@ public class GameView extends SurfaceView
    * @param myPlayerId - the local player ID (1 or 2).
    * @param opponentId - the opponent type ID, human or CPU.
    * @param gameLocale - the game topology, which can be either local,
-   * or distributed over various network types.
+* or distributed over various network types.
    * @param arcadeGame - arcade game mode flag.
    * @param levels - the single player game levels (can be null).
    * @param startingLevel - the single player game starting level.
+   * @param backgroundCamera - camera on background flag.
    */
   private void init(Context context,
                     int numPlayers,
@@ -2964,13 +2996,18 @@ public class GameView extends SurfaceView
                     int gameLocale,
                     boolean arcadeGame,
                     byte[] levels,
-                    int startingLevel) {
+                    int startingLevel, boolean backgroundCamera) {
     mContext = context;
     this.gameLocale = gameLocale;
     this.numPlayers = numPlayers;
-    this.setZOrderOnTop(true);    // necessary for transparent
+    this.backgroundCamera = backgroundCamera;
     SurfaceHolder holder = getHolder();
-    holder.setFormat(PixelFormat.TRANSPARENT);
+
+    if (backgroundCamera) {
+      this.setZOrderOnTop(true);    // necessary for transparent
+      holder.setFormat(PixelFormat.TRANSPARENT);
+    }
+
     holder.addCallback(this);
     mOpponent = null;
 

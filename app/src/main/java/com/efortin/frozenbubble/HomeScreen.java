@@ -250,7 +250,7 @@ public class HomeScreen extends Activity {
          */
         startFrozenBubble(VirtualInput.PLAYER1, 1,
                           FrozenBubble.HUMAN,
-                          FrozenBubble.LOCALE_LOCAL, false, true);
+                          FrozenBubble.LOCALE_LOCAL, false, true, false);
       }
     });
     continueButton.setOnTouchListener(new Button.OnTouchListener(){
@@ -302,51 +302,180 @@ public class HomeScreen extends Activity {
    * highlighted.
    */
   private void addHomeButtons() {
+//    /*
+//     * Construct the 2 player game button.
+//     */
+//    Button start2pGameButton = new Button(this);
+//    start2pGameButton.setOnClickListener(new Button.OnClickListener(){
+//      public void onClick(View v){
+//        buttonSelPage1 = BTN3_ID;
+//        mSoundManager.playSound("stick", R.raw.stick);
+//        /*
+//         * Display the 2 player mode buttons page.
+//         */
+//        displayPage(2);
+//      }
+//    });
+//    start2pGameButton.setOnTouchListener(new Button.OnTouchListener(){
+//      public boolean onTouch(View v, MotionEvent event){
+//        if (event.getAction() == MotionEvent.ACTION_DOWN)
+//          v.requestFocus();
+//        return false;
+//      }
+//    });
+//    start2pGameButton.setText("2 Player");
+//    start2pGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+//    start2pGameButton.setWidth((int) (start2pGameButton.getTextSize() * 9));
+//    start2pGameButton.setTypeface(null, Typeface.BOLD);
+//    start2pGameButton.setHorizontalFadingEdgeEnabled(true);
+//    start2pGameButton.setFadingEdgeLength(5);
+//    start2pGameButton.setShadowLayer(5, 5, 5, R.color.black);
+//    start2pGameButton.setId(BTN3_ID);
+//    start2pGameButton.setFocusable(true);
+//    start2pGameButton.setFocusableInTouchMode(true);
+//    LayoutParams myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+//                                             LayoutParams.WRAP_CONTENT);
+//    myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+//    myParams.topMargin = 15;
+//    myParams.bottomMargin = 15;
+//    /*
+//     * Add view to layout.
+//     */
+//    myLayout.addView(start2pGameButton, myParams);
+//    /*
+//     * Construct the 1 player game button.
+//     */
+//    Button start1pGameButton = new Button(this);
+//    start1pGameButton.setOnClickListener(new Button.OnClickListener(){
+//      public void onClick(View v){
+//        buttonSelPage1 = BTN2_ID;
+//        mSoundManager.playSound("stick", R.raw.stick);
+//        /*
+//         * Process the button tap and start/resume a 1 player game.
+//         */
+//        startFrozenBubble(VirtualInput.PLAYER1, 1,
+//                          FrozenBubble.HUMAN,
+//                          FrozenBubble.LOCALE_LOCAL, false, false);
+//      }
+//    });
+//    start1pGameButton.setOnTouchListener(new Button.OnTouchListener(){
+//      public boolean onTouch(View v, MotionEvent event){
+//        if (event.getAction() == MotionEvent.ACTION_DOWN)
+//          v.requestFocus();
+//        return false;
+//      }
+//    });
+//    start1pGameButton.setText("Puzzle");
+//    start1pGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+//    start1pGameButton.setWidth((int) (start1pGameButton.getTextSize() * 9));
+//    start1pGameButton.setTypeface(null, Typeface.BOLD);
+//    start1pGameButton.setHorizontalFadingEdgeEnabled(true);
+//    start1pGameButton.setFadingEdgeLength(5);
+//    start1pGameButton.setShadowLayer(5, 5, 5, R.color.black);
+//    start1pGameButton.setId(BTN2_ID);
+//    start1pGameButton.setFocusable(true);
+//    start1pGameButton.setFocusableInTouchMode(true);
+//    myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+//                                LayoutParams.WRAP_CONTENT);
+//    myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+//    myParams.addRule(RelativeLayout.ABOVE, start2pGameButton.getId());
+//    myParams.topMargin = 15;
+//    myParams.bottomMargin = 15;
+//    /*
+//     * Add view to layout.
+//     */
+//    myLayout.addView(start1pGameButton, myParams);
+//    /*
+//     * Construct the 1 player arcade game button.
+//     */
+//    Button startArcadeGameButton = new Button(this);
+//    startArcadeGameButton.setOnClickListener(new Button.OnClickListener(){
+//      public void onClick(View v){
+//        buttonSelPage1 = BTN1_ID;
+//        mSoundManager.playSound("stick", R.raw.stick);
+//        /*
+//         * Process the button tap and start/resume a 1 player arcade
+//         * game.
+//         */
+//        startFrozenBubble(VirtualInput.PLAYER1, 1,
+//                          FrozenBubble.HUMAN,
+//                          FrozenBubble.LOCALE_LOCAL, true, false);
+//      }
+//    });
+//    startArcadeGameButton.setOnTouchListener(new Button.OnTouchListener(){
+//      public boolean onTouch(View v, MotionEvent event){
+//        if (event.getAction() == MotionEvent.ACTION_DOWN)
+//          v.requestFocus();
+//        return false;
+//      }
+//    });
+//    startArcadeGameButton.setText("Arcade");
+//    startArcadeGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+//    startArcadeGameButton.setWidth((int) (startArcadeGameButton.getTextSize() * 9));
+//    startArcadeGameButton.setTypeface(null, Typeface.BOLD);
+//    startArcadeGameButton.setHorizontalFadingEdgeEnabled(true);
+//    startArcadeGameButton.setFadingEdgeLength(5);
+//    startArcadeGameButton.setShadowLayer(5, 5, 5, R.color.black);
+//    startArcadeGameButton.setId(BTN1_ID);
+//    startArcadeGameButton.setFocusable(true);
+//    startArcadeGameButton.setFocusableInTouchMode(true);
+//    myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+//                                LayoutParams.WRAP_CONTENT);
+//    myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+//    myParams.addRule(RelativeLayout.ABOVE, start1pGameButton.getId());
+//    myParams.topMargin = 15;
+//    myParams.bottomMargin = 15;
+//    /*
+//     * Add view to layout.
+//     */
+//    myLayout.addView(startArcadeGameButton, myParams);
+//    /*
+//     * Construct the game extras button.
+//     */
+//    Button gameExtrasButton = new Button(this);
+//    gameExtrasButton.setOnClickListener(new Button.OnClickListener(){
+//      public void onClick(View v){
+//        buttonSelPage1 = BTN4_ID;
+//        mSoundManager.playSound("stick", R.raw.stick);
+//        /*
+//         * Display the game extras buttons page.
+//         */
+//        displayPage(4);
+//      }
+//    });
+//    gameExtrasButton.setOnTouchListener(new Button.OnTouchListener(){
+//      public boolean onTouch(View v, MotionEvent event){
+//        if (event.getAction() == MotionEvent.ACTION_DOWN)
+//          v.requestFocus();
+//        return false;
+//      }
+//    });
+//    gameExtrasButton.setText("Extras");
+//    gameExtrasButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+//    gameExtrasButton.setWidth((int) (gameExtrasButton.getTextSize() * 9));
+//    gameExtrasButton.setTypeface(null, Typeface.BOLD);
+//    gameExtrasButton.setHorizontalFadingEdgeEnabled(true);
+//    gameExtrasButton.setFadingEdgeLength(5);
+//    gameExtrasButton.setShadowLayer(5, 5, 5, R.color.black);
+//    gameExtrasButton.setId(BTN4_ID);
+//    gameExtrasButton.setFocusable(true);
+//    gameExtrasButton.setFocusableInTouchMode(true);
+//    myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+//                                LayoutParams.WRAP_CONTENT);
+//    myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+//    myParams.addRule(RelativeLayout.BELOW, start2pGameButton.getId());
+//    myParams.topMargin = 15;
+//    myParams.bottomMargin = 15;
+//    /*
+//     * Add view to layout.
+//     */
+//    myLayout.addView(gameExtrasButton, myParams);
+    
     /*
-     * Construct the 2 player game button.
+     * Construct the regular game button.
      */
-    Button start2pGameButton = new Button(this);
-    start2pGameButton.setOnClickListener(new Button.OnClickListener(){
-      public void onClick(View v){
-        buttonSelPage1 = BTN3_ID;
-        mSoundManager.playSound("stick", R.raw.stick);
-        /*
-         * Display the 2 player mode buttons page.
-         */
-        displayPage(2);
-      }
-    });
-    start2pGameButton.setOnTouchListener(new Button.OnTouchListener(){
-      public boolean onTouch(View v, MotionEvent event){
-        if (event.getAction() == MotionEvent.ACTION_DOWN)
-          v.requestFocus();
-        return false;
-      }
-    });
-    start2pGameButton.setText("2 Player");
-    start2pGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-    start2pGameButton.setWidth((int) (start2pGameButton.getTextSize() * 9));
-    start2pGameButton.setTypeface(null, Typeface.BOLD);
-    start2pGameButton.setHorizontalFadingEdgeEnabled(true);
-    start2pGameButton.setFadingEdgeLength(5);
-    start2pGameButton.setShadowLayer(5, 5, 5, R.color.black);
-    start2pGameButton.setId(BTN3_ID);
-    start2pGameButton.setFocusable(true);
-    start2pGameButton.setFocusableInTouchMode(true);
-    LayoutParams myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                             LayoutParams.WRAP_CONTENT);
-    myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-    myParams.topMargin = 15;
-    myParams.bottomMargin = 15;
-    /*
-     * Add view to layout.
-     */
-    myLayout.addView(start2pGameButton, myParams);
-    /*
-     * Construct the 1 player game button.
-     */
-    Button start1pGameButton = new Button(this);
-    start1pGameButton.setOnClickListener(new Button.OnClickListener(){
+    Button cameraGameButton = new Button(this);
+    cameraGameButton.setOnClickListener(new Button.OnClickListener(){
       public void onClick(View v){
         buttonSelPage1 = BTN2_ID;
         mSoundManager.playSound("stick", R.raw.stick);
@@ -354,42 +483,42 @@ public class HomeScreen extends Activity {
          * Process the button tap and start/resume a 1 player game.
          */
         startFrozenBubble(VirtualInput.PLAYER1, 1,
-                          FrozenBubble.HUMAN,
-                          FrozenBubble.LOCALE_LOCAL, false, false);
+                FrozenBubble.HUMAN,
+                FrozenBubble.LOCALE_LOCAL, false, false, true);
       }
     });
-    start1pGameButton.setOnTouchListener(new Button.OnTouchListener(){
+    cameraGameButton.setOnTouchListener(new Button.OnTouchListener(){
       public boolean onTouch(View v, MotionEvent event){
         if (event.getAction() == MotionEvent.ACTION_DOWN)
           v.requestFocus();
         return false;
       }
     });
-    start1pGameButton.setText("Puzzle");
-    start1pGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-    start1pGameButton.setWidth((int) (start1pGameButton.getTextSize() * 9));
-    start1pGameButton.setTypeface(null, Typeface.BOLD);
-    start1pGameButton.setHorizontalFadingEdgeEnabled(true);
-    start1pGameButton.setFadingEdgeLength(5);
-    start1pGameButton.setShadowLayer(5, 5, 5, R.color.black);
-    start1pGameButton.setId(BTN2_ID);
-    start1pGameButton.setFocusable(true);
-    start1pGameButton.setFocusableInTouchMode(true);
-    myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                LayoutParams.WRAP_CONTENT);
+    cameraGameButton.setText("Camera");
+    cameraGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+    cameraGameButton.setWidth((int) (cameraGameButton.getTextSize() * 9));
+    cameraGameButton.setTypeface(null, Typeface.BOLD);
+    cameraGameButton.setHorizontalFadingEdgeEnabled(true);
+    cameraGameButton.setFadingEdgeLength(5);
+    cameraGameButton.setShadowLayer(5, 5, 5, R.color.black);
+    cameraGameButton.setId(BTN2_ID);
+    cameraGameButton.setFocusable(true);
+    cameraGameButton.setFocusableInTouchMode(true);
+    LayoutParams myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
+            LayoutParams.WRAP_CONTENT);
     myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-    myParams.addRule(RelativeLayout.ABOVE, start2pGameButton.getId());
     myParams.topMargin = 15;
     myParams.bottomMargin = 15;
     /*
      * Add view to layout.
      */
-    myLayout.addView(start1pGameButton, myParams);
+    myLayout.addView(cameraGameButton, myParams);
+
     /*
-     * Construct the 1 player arcade game button.
+     * Construct the regular game button.
      */
-    Button startArcadeGameButton = new Button(this);
-    startArcadeGameButton.setOnClickListener(new Button.OnClickListener(){
+    Button regularGameButton = new Button(this);
+    regularGameButton.setOnClickListener(new Button.OnClickListener(){
       public void onClick(View v){
         buttonSelPage1 = BTN1_ID;
         mSoundManager.playSound("stick", R.raw.stick);
@@ -398,78 +527,37 @@ public class HomeScreen extends Activity {
          * game.
          */
         startFrozenBubble(VirtualInput.PLAYER1, 1,
-                          FrozenBubble.HUMAN,
-                          FrozenBubble.LOCALE_LOCAL, true, false);
+                FrozenBubble.HUMAN,
+                FrozenBubble.LOCALE_LOCAL, true, false, false);
       }
     });
-    startArcadeGameButton.setOnTouchListener(new Button.OnTouchListener(){
+    regularGameButton.setOnTouchListener(new Button.OnTouchListener(){
       public boolean onTouch(View v, MotionEvent event){
         if (event.getAction() == MotionEvent.ACTION_DOWN)
           v.requestFocus();
         return false;
       }
     });
-    startArcadeGameButton.setText("Arcade");
-    startArcadeGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-    startArcadeGameButton.setWidth((int) (startArcadeGameButton.getTextSize() * 9));
-    startArcadeGameButton.setTypeface(null, Typeface.BOLD);
-    startArcadeGameButton.setHorizontalFadingEdgeEnabled(true);
-    startArcadeGameButton.setFadingEdgeLength(5);
-    startArcadeGameButton.setShadowLayer(5, 5, 5, R.color.black);
-    startArcadeGameButton.setId(BTN1_ID);
-    startArcadeGameButton.setFocusable(true);
-    startArcadeGameButton.setFocusableInTouchMode(true);
+    regularGameButton.setText("Regular");
+    regularGameButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+    regularGameButton.setWidth((int) (regularGameButton.getTextSize() * 9));
+    regularGameButton.setTypeface(null, Typeface.BOLD);
+    regularGameButton.setHorizontalFadingEdgeEnabled(true);
+    regularGameButton.setFadingEdgeLength(5);
+    regularGameButton.setShadowLayer(5, 5, 5, R.color.black);
+    regularGameButton.setId(BTN1_ID);
+    regularGameButton.setFocusable(true);
+    regularGameButton.setFocusableInTouchMode(true);
     myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                LayoutParams.WRAP_CONTENT);
+            LayoutParams.WRAP_CONTENT);
     myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-    myParams.addRule(RelativeLayout.ABOVE, start1pGameButton.getId());
+    myParams.addRule(RelativeLayout.ABOVE, cameraGameButton.getId());
     myParams.topMargin = 15;
     myParams.bottomMargin = 15;
     /*
      * Add view to layout.
      */
-    myLayout.addView(startArcadeGameButton, myParams);
-    /*
-     * Construct the game extras button.
-     */
-    Button gameExtrasButton = new Button(this);
-    gameExtrasButton.setOnClickListener(new Button.OnClickListener(){
-      public void onClick(View v){
-        buttonSelPage1 = BTN4_ID;
-        mSoundManager.playSound("stick", R.raw.stick);
-        /*
-         * Display the game extras buttons page.
-         */
-        displayPage(4);
-      }
-    });
-    gameExtrasButton.setOnTouchListener(new Button.OnTouchListener(){
-      public boolean onTouch(View v, MotionEvent event){
-        if (event.getAction() == MotionEvent.ACTION_DOWN)
-          v.requestFocus();
-        return false;
-      }
-    });
-    gameExtrasButton.setText("Extras");
-    gameExtrasButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-    gameExtrasButton.setWidth((int) (gameExtrasButton.getTextSize() * 9));
-    gameExtrasButton.setTypeface(null, Typeface.BOLD);
-    gameExtrasButton.setHorizontalFadingEdgeEnabled(true);
-    gameExtrasButton.setFadingEdgeLength(5);
-    gameExtrasButton.setShadowLayer(5, 5, 5, R.color.black);
-    gameExtrasButton.setId(BTN4_ID);
-    gameExtrasButton.setFocusable(true);
-    gameExtrasButton.setFocusableInTouchMode(true);
-    myParams = new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                LayoutParams.WRAP_CONTENT);
-    myParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-    myParams.addRule(RelativeLayout.BELOW, start2pGameButton.getId());
-    myParams.topMargin = 15;
-    myParams.bottomMargin = 15;
-    /*
-     * Add view to layout.
-     */
-    myLayout.addView(gameExtrasButton, myParams);
+    myLayout.addView(regularGameButton, myParams);
   }
 
   /**
@@ -576,7 +664,7 @@ public class HomeScreen extends Activity {
          */
         startFrozenBubble(VirtualInput.PLAYER1, 2,
                           FrozenBubble.CPU,
-                          FrozenBubble.LOCALE_LOCAL, false, false);
+                          FrozenBubble.LOCALE_LOCAL, false, false, false);
       }
     });
     startCPUGameButton.setOnTouchListener(new Button.OnTouchListener(){
@@ -625,7 +713,7 @@ public class HomeScreen extends Activity {
            */
           startFrozenBubble(VirtualInput.PLAYER1, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_LOCAL, false, false);
+                            FrozenBubble.LOCALE_LOCAL, false, false, false);
         }
         else {
           numGamepadsDialog(numGamepads);
@@ -685,12 +773,12 @@ public class HomeScreen extends Activity {
         if (buttonSelPage2 == BTN6_ID) {
           startFrozenBubble(VirtualInput.PLAYER2, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_BLUETOOTH, false, false);
+                            FrozenBubble.LOCALE_BLUETOOTH, false, false, false);
         }
         else if (buttonSelPage2 == BTN7_ID) {
           startFrozenBubble(VirtualInput.PLAYER2, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_WIFI, false, false);
+                            FrozenBubble.LOCALE_WIFI, false, false, false);
         }
       }
     });
@@ -734,12 +822,12 @@ public class HomeScreen extends Activity {
         if (buttonSelPage2 == BTN6_ID) {
           startFrozenBubble(VirtualInput.PLAYER1, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_BLUETOOTH, false, false);
+                            FrozenBubble.LOCALE_BLUETOOTH, false, false, false);
         }
         else if (buttonSelPage2 == BTN7_ID) {
           startFrozenBubble(VirtualInput.PLAYER1, 2,
                             FrozenBubble.HUMAN,
-                            FrozenBubble.LOCALE_WIFI, false, false);
+                            FrozenBubble.LOCALE_WIFI, false, false, false);
         }
       }
     });
@@ -1152,18 +1240,20 @@ public class HomeScreen extends Activity {
    * @param numPlayers - the number of players (1 or 2).
    * @param opponentId - the opponent type ID, human or CPU.
    * @param gameLocale - the location of the opponent.  A local opponent
-   * will be played by the CPU.  A LAN opponent will be played over the
-   * network using multicasting, and an internet opponent will be played
-   * using TCP.
+* will be played by the CPU.  A LAN opponent will be played over the
+* network using multicasting, and an internet opponent will be played
+* using TCP.
    * @param arcadeGame - endless arcade game that scrolls new bubbles.
    * @param playerSave - load saved game information.
+   * @param backgroundCamera
    */
-  private void startFrozenBubble(int     myPlayerId,
-                                 int     numPlayers,
-                                 int     opponentId,
-                                 int     gameLocale,
+  private void startFrozenBubble(int myPlayerId,
+                                 int numPlayers,
+                                 int opponentId,
+                                 int gameLocale,
                                  boolean arcadeGame,
-                                 boolean playerSave) {
+                                 boolean playerSave,
+                                 boolean backgroundCamera) {
     finished = true;
     /*
      * Since the default game activity creates its own player,
@@ -1174,12 +1264,13 @@ public class HomeScreen extends Activity {
      * Create an intent to launch the activity to play the game.
      */
     Intent intent = new Intent(this, FrozenBubble.class);
-    intent.putExtra("myPlayerId", (int)     myPlayerId);
-    intent.putExtra("numPlayers", (int)     numPlayers);
-    intent.putExtra("opponentId", (int)     opponentId);
-    intent.putExtra("gameLocale", (int)     gameLocale);
-    intent.putExtra("arcadeGame", (boolean) arcadeGame);
-    intent.putExtra("playerSave", (boolean) playerSave);
+    intent.putExtra("myPlayerId", (int)           myPlayerId);
+    intent.putExtra("numPlayers", (int)           numPlayers);
+    intent.putExtra("opponentId", (int)           opponentId);
+    intent.putExtra("gameLocale", (int)           gameLocale);
+    intent.putExtra("arcadeGame", (boolean)       arcadeGame);
+    intent.putExtra("playerSave", (boolean)       playerSave);
+    intent.putExtra("backgroundCamera", (boolean) backgroundCamera);
     startActivity(intent);
     /*
      * Terminate the splash screen activity.
