@@ -126,6 +126,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import ca.uwaterloo.cassianomonteiro.experiment.CameraPreview;
 import ca.uwaterloo.cassianomonteiro.experiment.ExperimentLogger;
 
 public class FrozenBubble extends Activity

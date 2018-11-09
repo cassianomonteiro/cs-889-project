@@ -1,4 +1,4 @@
-package org.jfedor.frozenbubble;
+package ca.uwaterloo.cassianomonteiro.experiment;
 
 import android.content.Context;
 import android.hardware.Camera;

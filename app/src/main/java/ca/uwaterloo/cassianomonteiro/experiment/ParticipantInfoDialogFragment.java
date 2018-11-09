@@ -1,4 +1,4 @@
-package com.efortin.frozenbubble;
+package ca.uwaterloo.cassianomonteiro.experiment;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

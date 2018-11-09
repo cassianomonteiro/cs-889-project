@@ -85,6 +85,8 @@ import org.jfedor.frozenbubble.FrozenBubble;
 import org.jfedor.frozenbubble.R;
 import org.jfedor.frozenbubble.SoundManager;
 
+import ca.uwaterloo.cassianomonteiro.experiment.ParticipantInfoDialogFragment;
+
 public class HomeScreen extends Activity implements ParticipantInfoDialogFragment.ParticipantInfoDialogListener {
   /*
    * Provide unique IDs for the views associated with the relative

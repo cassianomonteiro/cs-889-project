@@ -1,10 +1,12 @@
-package org.jfedor.frozenbubble;
+package ca.uwaterloo.cassianomonteiro.experiment;
 
 import android.app.Activity;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
+
+import org.jfedor.frozenbubble.R;
 
 import static org.jfedor.frozenbubble.FrozenBubble.TAG;
 
