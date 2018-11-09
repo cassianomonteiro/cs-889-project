@@ -9,7 +9,6 @@ import java.io.IOException;
 
 public class ExperimentLogger {
 
-    private static final String LOG_FILENAME = "experiment_log.csv";
     private StringBuffer buffer = new StringBuffer();
     private long startTime;
     private long pausedTime;
@@ -44,7 +43,7 @@ public class ExperimentLogger {
     }
 
     public void logGameEnd() {
-        File file = context.getFileStreamPath(LOG_FILENAME);
+        File file = context.getFileStreamPath(getFileName());
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
             writer.write(buffer.toString());
@@ -56,13 +55,17 @@ public class ExperimentLogger {
     }
 
     private void checkFile() {
-        File file = context.getFileStreamPath(LOG_FILENAME);
+        File file = context.getFileStreamPath(getFileName());
 
         if (!file.exists()) {
             // Append title to stringbuffer
             buffer.append("participantID;runID;backgroundCamera;gameDuration;score");
             buffer.append(System.getProperty("line.separator"));
         }
+    }
+
+    private String getFileName() {
+        return "Participant" + String.format("%02d", Integer.parseInt(participantID)) + ".csv";
     }
 
 
