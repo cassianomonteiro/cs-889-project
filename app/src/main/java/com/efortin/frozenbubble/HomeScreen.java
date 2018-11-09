@@ -563,7 +563,7 @@ public class HomeScreen extends Activity implements ParticipantInfoDialogFragmen
   public void onDialogPositiveClick(String participantId, String runId) {
     startFrozenBubble(VirtualInput.PLAYER1, 1,
             FrozenBubble.HUMAN,
-            FrozenBubble.LOCALE_LOCAL, false, false, backgroundCamera,
+            FrozenBubble.LOCALE_LOCAL, true, false, backgroundCamera,
             participantId, runId);
   }
 

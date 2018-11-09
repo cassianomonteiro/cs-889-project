@@ -119,6 +119,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import ca.uwaterloo.cassianomonteiro.experiment.ExperimentLogger;
+
 public class GameView extends SurfaceView
   implements SurfaceHolder.Callback {
 
@@ -147,6 +149,7 @@ public class GameView extends SurfaceView
   private RemoteInterface remoteInterface;
   private VirtualInput    mLocalInput;
   private VirtualInput    mRemoteInput;
+  private ExperimentLogger experimentLogger;
 
   //********************************************************************
   // Listener interface for various events
@@ -2029,7 +2032,7 @@ public class GameView extends SurfaceView
                                       malusBar2, mLauncher,
                                       mSoundManager, mLevelManager,
                                       mHighScoreManager, mNetworkManager,
-                                      mPlayer1);
+                                      mPlayer1, experimentLogger);
         mPlayer1.setGameRef(mFrozenGame1);
 
         if (numPlayers > 1) {
@@ -2043,7 +2046,7 @@ public class GameView extends SurfaceView
                                         malusBar1, mLauncher,
                                         mSoundManager, mLevelManager,
                                         null, mNetworkManager,
-                                        mPlayer2);
+                                        mPlayer2, null);
           mPlayer2.setGameRef(mFrozenGame2);
 
           if (mNetworkManager != null) {
@@ -2855,7 +2858,7 @@ public class GameView extends SurfaceView
     super(context, attrs);
     //Log.i("frozen-bubble", "GameView constructor");
     init(context, 1, (int) VirtualInput.PLAYER1, FrozenBubble.HUMAN,
-         FrozenBubble.LOCALE_LOCAL, FrozenBubble.arcadeGame, null, 0, false);
+         FrozenBubble.LOCALE_LOCAL, FrozenBubble.arcadeGame, null, 0, false, null);
   }
 
   /**
@@ -2869,7 +2872,7 @@ public class GameView extends SurfaceView
     //Log.i("frozen-bubble", "GameView constructor");
     init(context, 1, (int) VirtualInput.PLAYER1, FrozenBubble.HUMAN,
          FrozenBubble.LOCALE_LOCAL, FrozenBubble.arcadeGame, levels,
-         startingLevel, false);
+         startingLevel, false, null);
   }
 
   /**
@@ -2890,7 +2893,7 @@ public class GameView extends SurfaceView
                   boolean arcadeGame) {
     super(context);
     //Log.i("frozen-bubble", "GameView constructor");
-    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0, false);
+    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0, false, null);
   }
 
   /**
@@ -2900,9 +2903,10 @@ public class GameView extends SurfaceView
    * @param myPlayerId - the local player ID (1 or 2).
    * @param opponentId - the opponent type ID, human or CPU.
    * @param gameLocale - the game topology, which can be either local,
-   * or distributed over various network types.
+* or distributed over various network types.
    * @param arcadeGame - arcade game mode flag.
    * @param backgroundCamera - camera on background flag.
+   * @param experimentLogger
    */
   public GameView(Context context,
                   int numPlayers,
@@ -2910,10 +2914,11 @@ public class GameView extends SurfaceView
                   int opponentId,
                   int gameLocale,
                   boolean arcadeGame,
-                  boolean backgroundCamera) {
+                  boolean backgroundCamera,
+                  ExperimentLogger experimentLogger) {
     super(context);
     //Log.i("frozen-bubble", "GameView constructor");
-    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0, backgroundCamera);
+    init(context, numPlayers, myPlayerId, opponentId, gameLocale, arcadeGame, null, 0, backgroundCamera, experimentLogger);
   }
 
   private boolean checkImmediateAction() {
@@ -2988,6 +2993,7 @@ public class GameView extends SurfaceView
    * @param levels - the single player game levels (can be null).
    * @param startingLevel - the single player game starting level.
    * @param backgroundCamera - camera on background flag.
+   * @param experimentLogger
    */
   private void init(Context context,
                     int numPlayers,
@@ -2996,11 +3002,14 @@ public class GameView extends SurfaceView
                     int gameLocale,
                     boolean arcadeGame,
                     byte[] levels,
-                    int startingLevel, boolean backgroundCamera) {
+                    int startingLevel,
+                    boolean backgroundCamera,
+                    ExperimentLogger experimentLogger) {
     mContext = context;
     this.gameLocale = gameLocale;
     this.numPlayers = numPlayers;
     this.backgroundCamera = backgroundCamera;
+    this.experimentLogger = experimentLogger;
     SurfaceHolder holder = getHolder();
 
     if (backgroundCamera) {

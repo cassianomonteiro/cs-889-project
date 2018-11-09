@@ -126,6 +126,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
 
+import ca.uwaterloo.cassianomonteiro.experiment.ExperimentLogger;
+
 public class FrozenBubble extends Activity
   implements GameListener,
              AccelerometerListener,
@@ -164,6 +166,8 @@ public class FrozenBubble extends Activity
   public static int     opponentId = CPU;
   public static boolean playerSave = false;
   public static boolean backgroundCamera = false;
+  public static String  participantId = "";
+  public static String  runId = "";
 
   private static Preferences prefs = new Preferences();
 
@@ -179,6 +183,7 @@ public class FrozenBubble extends Activity
   private GameView   mGameView             = null;
   private ModPlayer  myModPlayer           = null;
   private OrientationEventListener myOrientationEventListener = null;
+  private ExperimentLogger experimentLogger = null;
 
   private final int[] MODlist = {
     R.raw.ambientpower,
@@ -564,6 +569,9 @@ public class FrozenBubble extends Activity
   }
 
   private void exit(boolean goToHomeScreen) {
+
+    experimentLogger.logGameEnd();
+
     /*
      * Preserve game information and perform activity cleanup.
      */
@@ -594,6 +602,9 @@ public class FrozenBubble extends Activity
   }
 
   private void exitGameDialog() {
+
+    experimentLogger.logGamePause();
+
     AlertDialog.Builder builder = new AlertDialog.Builder(FrozenBubble.this);
     /*
      * Set the dialog title.
@@ -619,6 +630,9 @@ public class FrozenBubble extends Activity
     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int id) {
+
+        experimentLogger.logGameResume();
+
         /*
          * User clicked Cancel.  Do nothing.
          */
@@ -808,12 +822,18 @@ public class FrozenBubble extends Activity
       numPlayers = map.getInt    ("numPlayers", 0                   );
       opponentId = map.getInt    ("opponentId", CPU                 );
     }
+
+    // Create experiment logger
+    experimentLogger = new ExperimentLogger(getApplicationContext(), participantId, runId, backgroundCamera);
+
     mGameView = new GameView(this,
                              numPlayers,
                              myPlayerId,
                              opponentId,
                              gameLocale,
-                             arcadeGame, backgroundCamera);
+                             arcadeGame,
+                             backgroundCamera,
+                             experimentLogger);
 
     mGameView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT));
@@ -836,6 +856,9 @@ public class FrozenBubble extends Activity
     mGameThread = mGameView.getThread();
     mGameThread.restoreState(map);
     mGameView.requestFocus();
+
+    // Log game start
+    experimentLogger.logGameStart();
   }
 
   private Camera mCamera;
@@ -1392,6 +1415,10 @@ public class FrozenBubble extends Activity
         playerSave = intent.getBooleanExtra("playerSave", false);
       if (intent.hasExtra("backgroundCamera"))
         backgroundCamera = intent.getBooleanExtra("backgroundCamera", false);
+      if (intent.hasExtra("participantId"))
+        participantId = intent.getStringExtra("participantId");
+      if (intent.hasExtra("runId"))
+        runId = intent.getStringExtra("runId");
     }
 
     initGameOptions();

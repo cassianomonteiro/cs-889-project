@@ -52,11 +52,6 @@
 
 package org.jfedor.frozenbubble;
 
-import java.util.Random;
-import java.util.Vector;
-
-import org.gsanson.frozenbubble.MalusBar;
-
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -68,6 +63,13 @@ import com.efortin.frozenbubble.CRC16;
 import com.efortin.frozenbubble.HighscoreManager;
 import com.efortin.frozenbubble.NetworkManager;
 import com.efortin.frozenbubble.VirtualInput;
+
+import org.gsanson.frozenbubble.MalusBar;
+
+import java.util.Random;
+import java.util.Vector;
+
+import ca.uwaterloo.cassianomonteiro.experiment.ExperimentLogger;
 
 public class FrozenGame extends GameScreen {
   private final int[] columnX = {190, 206, 222, 238, 254,
@@ -122,6 +124,7 @@ public class FrozenGame extends GameScreen {
   PenguinSprite    penguin;
   Random           random;
   SoundManager     soundManager;
+  ExperimentLogger experimentLogger;
 
   Vector<Sprite> falling;
   Vector<Sprite> goingUp;
@@ -167,7 +170,8 @@ public class FrozenGame extends GameScreen {
                     LevelManager levelManager_arg,
                     HighscoreManager highscoreManager_arg,
                     NetworkManager networkManager_arg,
-                    VirtualInput input_arg) {
+                    VirtualInput input_arg,
+                    ExperimentLogger experimentLogger) {
     random               = new Random(System.currentTimeMillis());
     launcher             = launcher_arg;
     penguins             = penguins_arg;
@@ -187,6 +191,7 @@ public class FrozenGame extends GameScreen {
     launchBubblePosition = START_LAUNCH_DIRECTION;
     readyToFire          = false;
     swapPressed          = false;
+    this.experimentLogger = experimentLogger;
 
     /*
      * Initialize game modifier variables.
@@ -319,7 +324,7 @@ public class FrozenGame extends GameScreen {
          bubbleBlink_arg, gameWon_arg, gameLost_arg, gamePaused_arg, hurry_arg,
          null, null, penguins_arg, compressorHead_arg, compressor_arg, null,
          launcher_arg, soundManager_arg, levelManager_arg, highscoreManager_arg,
-         null, null);
+         null, null, null);
   }
 
   public void addAttackBubbles(int attackBubbles) {
@@ -800,6 +805,10 @@ public class FrozenGame extends GameScreen {
     else {
       if ((move[FIRE] == KEY_UP) || (hurryTime > HURRY_ME_TIME)) {
         if (getOkToFire()) {
+
+          // Log score
+          experimentLogger.logScore(nbBubbles);
+
           nbBubbles++;
           movingBubble = new BubbleSprite(new Rect(302, 390, 32, 32),
                                           launchBubblePosition,
