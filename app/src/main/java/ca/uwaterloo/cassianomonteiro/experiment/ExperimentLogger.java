@@ -1,6 +1,7 @@
 package ca.uwaterloo.cassianomonteiro.experiment;
 
 import android.content.Context;
+import android.os.Environment;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -38,14 +39,13 @@ public class ExperimentLogger {
 
     public void logScore(int score) {
         long gameDuration = System.currentTimeMillis() - startTime - pauseDuration;
-        buffer.append(participantID + ";" + runID + ";" + backgroundCamera + ";" + gameDuration + ";" + score);
+        buffer.append(participantID + "," + runID + "," + backgroundCamera + "," + gameDuration + "," + score + ",");
         buffer.append(System.getProperty("line.separator"));
     }
 
     public void logGameEnd() {
-        File file = context.getFileStreamPath(getFileName());
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(getLogFile(), true));
             writer.write(buffer.toString());
             writer.flush();
             writer.close();
@@ -55,17 +55,18 @@ public class ExperimentLogger {
     }
 
     private void checkFile() {
-        File file = context.getFileStreamPath(getFileName());
+        File file = getLogFile();
 
         if (!file.exists()) {
             // Append title to stringbuffer
-            buffer.append("participantID;runID;backgroundCamera;gameDuration;score");
+            buffer.append("participantID,runID,backgroundCamera,gameDuration,score,");
             buffer.append(System.getProperty("line.separator"));
         }
     }
 
-    private String getFileName() {
-        return "Participant" + String.format("%02d", Integer.parseInt(participantID)) + ".csv";
+    private File getLogFile() {
+        String fileName = "Participant" + String.format("%02d", Integer.parseInt(participantID)) + ".csv";
+        return new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), fileName);
     }
 
 

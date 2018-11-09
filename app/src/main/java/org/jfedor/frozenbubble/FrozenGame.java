@@ -806,10 +806,11 @@ public class FrozenGame extends GameScreen {
       if ((move[FIRE] == KEY_UP) || (hurryTime > HURRY_ME_TIME)) {
         if (getOkToFire()) {
 
+          nbBubbles++;
+
           // Log score
           experimentLogger.logScore(nbBubbles);
 
-          nbBubbles++;
           movingBubble = new BubbleSprite(new Rect(302, 390, 32, 32),
                                           launchBubblePosition,
                                           currentColor,
