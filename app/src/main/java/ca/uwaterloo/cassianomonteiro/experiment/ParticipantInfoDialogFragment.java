@@ -6,7 +6,11 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.EditText;
 
 import org.jfedor.frozenbubble.R;
@@ -17,12 +21,14 @@ public class ParticipantInfoDialogFragment extends DialogFragment {
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface ParticipantInfoDialogListener {
-        public void onDialogPositiveClick(String participantId, String runId);
-        public void onDialogNegativeClick();
+        void onDialogPositiveClick(String participantId, String runId);
+        void onDialogNegativeClick();
     }
 
     // Use this instance of the interface to deliver action events
     ParticipantInfoDialogListener mListener;
+    EditText participantText;
+    EditText runText;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -32,14 +38,18 @@ public class ParticipantInfoDialogFragment extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.run_dialog, null))
+        View dialogView = inflater.inflate(R.layout.run_dialog, null);
+
+        participantText = dialogView.findViewById(R.id.participant_id);
+        runText = dialogView.findViewById(R.id.run_id);
+
+
+        builder.setView(dialogView)
                 .setTitle("Run info")
                 // Add action buttons
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        EditText participantText = getDialog().findViewById(R.id.participant_id);
-                        EditText runText = getDialog().findViewById(R.id.run_id);
                         mListener.onDialogPositiveClick(participantText.getText().toString(),
                                 runText.getText().toString());
                     }
@@ -50,7 +60,21 @@ public class ParticipantInfoDialogFragment extends DialogFragment {
                         ParticipantInfoDialogFragment.this.getDialog().cancel();
                     }
                 });
-        return builder.create();
+
+        Dialog dialog = builder.create();
+
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                TextWatcher watcher = new ExperimentTextWatcher(dialog);
+                participantText.addTextChangedListener(watcher);
+                runText.addTextChangedListener(watcher);
+
+                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            }
+        });
+
+        return dialog;
     }
 
     // Override the Fragment.onAttach() method to instantiate the ParticipantInfoDialogListener
@@ -68,4 +92,32 @@ public class ParticipantInfoDialogFragment extends DialogFragment {
         }
     }
 
+
+    private class ExperimentTextWatcher implements TextWatcher {
+
+        private DialogInterface dialog;
+
+        public ExperimentTextWatcher(DialogInterface dialog) {
+            this.dialog = dialog;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            boolean enabled = !TextUtils.isEmpty(participantText.getText()) &&
+                                !TextUtils.isEmpty(runText.getText());
+
+            ((AlertDialog) dialog).getButton(
+                    AlertDialog.BUTTON_POSITIVE).setEnabled(enabled);
+        }
+    }
 }
