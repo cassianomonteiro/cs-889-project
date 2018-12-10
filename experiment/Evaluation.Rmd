@@ -1,0 +1,310 @@
+---
+title: "CS-889 Experiment"
+author: "Arman Naeimian and Cassiano Monteiro"
+output: html_document
+---
+
+# Experiment evaluation
+
+## Development environment
+
+**Operating system:** MacOS X 10.14 Mojave
+
+**R Studio:** 1.1.456
+
+**R environment:**
+```{r echo=FALSE}
+version
+```
+
+```{r message=FALSE, warning=FALSE}
+# Contains references to dplyr and ggplot2
+library(tidyverse)
+library(reshape)
+library(knitr)
+library(ez)
+library(pander)
+library(apa)
+library(readxl)
+
+# Read excel file
+baseline_play = read_excel("experiment_data.xlsx", sheet = "Baseline play")
+raw_data = read_excel("experiment_data.xlsx", sheet = "Summary")
+```
+
+## Results
+
+### Hypothesis 1
+
+- Null hypothesis 1: Usage of a mobile phone while walking does not decrease environment awareness. 
+- Alternate hypothesis 1: Usage of a mobile phone while walking decreases environment awareness significantly.
+
+#### Time to complete runs
+
+We start our evaluation of hypotesis 1 by checking mean/median times and standard deviations for the time to complete each block and game type of our experiment.
+
+```{r message=FALSE, warning=FALSE}
+block_times = raw_data %>% group_by(block) %>% summarise(mean_time = mean(time), sd = sd(time))
+game_times = raw_data %>% group_by(game) %>% summarise(mean_time = mean(time), sd = sd(time))
+```
+
+```{r message=FALSE, warning=FALSE}
+# Create boxplots
+par(cex.axis=0.8)
+
+kable(block_times)
+boxplot(time ~ block, data = raw_data, xlab = "Block", ylab = "Time")
+points(1:3, block_times$mean_time, col = "red")
+
+kable(game_times)
+boxplot(time ~ game, data = raw_data, xlab = "Game", ylab = "Time")
+points(1:3, game_times$mean_time, col = "red")
+
+```
+
+We can see that standard deviations are similar for blocks and game types, however the mean value of time is noticeable lower for block 1, where the participant did not use the mobile phone while walking. Before looking at effect significance, we need to check if times follow a normal distribution:
+
+```{r message=FALSE, warning=FALSE}
+# Shapiro test for normal distribution
+block1_data = raw_data %>% filter(block == 1) %>% select(time)
+block2_data = raw_data %>% filter(block == 2) %>% select(time)
+block3_data = raw_data %>% filter(block == 3) %>% select(time)
+regular_data = raw_data %>% filter(game == "Regular") %>% select(time)
+camera_data = raw_data %>% filter(game == "Camera") %>% select(time)
+```
+
+```{r message=FALSE, warning=FALSE}
+shapiro.test(block1_data$time)
+shapiro.test(block2_data$time)
+shapiro.test(block3_data$time)
+shapiro.test(regular_data$time)
+shapiro.test(camera_data$time)
+```
+
+Shapiro tests show that times for both **block** and **game** follow normal distributions (p>0.1). Let's do a pairwise comparison of time between blocks and games using parametric tests (within-group, 2 levels).
+
+```{r message=FALSE, warning=FALSE}
+attach(raw_data)
+pw_block = pairwise.t.test(time, interaction(block), p.adj = "bonferroni", paired = TRUE)
+pw_game = pairwise.t.test(time, interaction(game), p.adj = "bonferroni", paired = TRUE)
+detach(raw_data)
+```
+```{r message=FALSE, warning=FALSE}
+kable(pw_block$p.value)
+kable(pw_game$p.value)
+```
+
+Pairwise comparisons show that there is a significant effect from block 1 (no mobile phone) on time to complete the run (p<0.01) for both game types. Therefore we can conclude that using a mobile phone increases time to complete the run.
+
+There is no significant effect between blocks 2 and 3 or between game types (Regular or Camera). This shows that there is no learning nor fatigue effect.
+
+#### Scores of each run
+
+In the first part of the experiment, participants played the game without walking. Data recorded shows scores for about 1 minute of playing. Let's take a look at mean/median scores and standard deviations.
+
+```{r message=FALSE, warning=FALSE}
+baseline_play$game = "-"
+baseline_play$block = 0
+
+scores_data = raw_data %>% filter(block != 1) %>% select(participant, time, block, game, score)
+scores_data = rbind(baseline_play, scores_data)
+scores_data$block = factor(scores_data$block)
+scores_data$game = factor(scores_data$game)
+scores_data$score = as.numeric(scores_data$score)
+
+block_scores = scores_data %>% group_by(block) %>% summarise(mean_score = mean(score), sd = sd(score))
+game_scores = scores_data %>% group_by(game) %>% summarise(mean_score = mean(score), sd = sd(score))
+```
+
+```{r message=FALSE, warning=FALSE}
+kable(block_scores)
+boxplot(score ~ block, data = scores_data, xlab = "Block", ylab = "Score")
+points(1:3, block_scores$mean_score, col = "red")
+
+kable(game_scores)
+boxplot(score ~ game, data = scores_data, xlab = "Game", ylab = "Score")
+points(1:3, game_scores$mean_score, col = "red")
+```
+
+Values and bloxplots show similar mean values with high standard deviations for blocks and game types. We should run ANOVA on both for further investigation (within-group, 3 levels).
+
+```{r message=FALSE, warning=FALSE}
+anova_block = ezANOVA(scores_data, dv=.(score), wid=.(participant), within=.(block), detailed=TRUE)
+kable(anova_apa(anova_block, sph_corr ="gg", print=FALSE))
+anova_game = ezANOVA(scores_data, dv=.(score), wid=.(participant), within=.(game), detailed=TRUE)
+kable(anova_apa(anova_game, sph_corr ="gg", print=FALSE))
+```
+
+The ANOVA analysis shows no significant effect of block or game (p>0.1), confirming that there is no significant difference on score in all conditions evaluated.
+
+#### Errors for each run
+
+Errors were accounted for whenever the participant stepped on an obstacle. Let's take a look at mean/median error counts and standard deviations.
+
+```{r message=FALSE, warning=FALSE}
+block_errors = raw_data %>% group_by(block) %>% summarise(mean_errors = mean(errors), sd = sd(errors))
+game_errors = raw_data %>% group_by(game) %>% summarise(mean_errors = mean(errors), sd = sd(errors))
+```
+```{r message=FALSE, warning=FALSE}
+kable(block_errors)
+boxplot(errors ~ block, data = raw_data, xlab = "Block", ylab = "Errors")
+points(1:3, block_errors$mean_errors, col = "red")
+
+kable(game_errors)
+boxplot(errors ~ game, data = raw_data, xlab = "Block", ylab = "Errors")
+points(1:3, game_errors$mean_errors, col = "red")
+```
+
+We can see slightly higher means for errors with a mobile phone compared to walking without mobile phone. We also see a slightly higher mean for the regular game compared with the camera game. To evaluate effect significance, let's see if errors follow a normal distribution:
+
+```{r message=FALSE, warning=FALSE}
+block1_errors = raw_data %>% filter(block == 1) %>% select(errors)
+block2_errors = raw_data %>% filter(block == 2) %>% select(errors)
+block3_errors = raw_data %>% filter(block == 3) %>% select(errors)
+regular_errors = raw_data %>% filter(game == "Regular") %>% select(errors)
+camera_errors = raw_data %>% filter(game == "Camera") %>% select(errors)
+```
+
+```{r message=FALSE, warning=FALSE}
+shapiro.test(block1_errors$errors)
+shapiro.test(block2_errors$errors)
+shapiro.test(block3_errors$errors)
+shapiro.test(regular_errors$errors)
+shapiro.test(camera_errors$errors)
+```
+
+Shapiro tests show that errors do not follow a normal distribution (p<0.01). Beacuse of that, let's run some Friedman tests to check for any significance on errors (non-parametric, within-group, 3 levels).
+
+```{r message=FALSE, warning=FALSE}
+blocks_errors = select(raw_data, participant, block, errors) %>% spread(block, errors)
+games_errors = select(raw_data, participant, game, errors) %>% spread(game, errors)
+blocks_errors$participant = NULL
+games_errors$participant = NULL
+```
+
+```{r message=FALSE, warning=FALSE}
+friedman.test(data.matrix(blocks_errors))
+friedman.test(data.matrix(games_errors))
+```
+
+Friedman tests show no significance in errors either for blocks or game types (p>0.1).
+
+### Hypothesis 2
+
+- Null hypothesis 2: This kind of visual aid (background camera) does not change awareness significantly (i.e., if the user is fully focused on the task, the user will not perceive the background).
+- Alternate hypothesis 2: This kind of visual aid (background camera) improves awareness significantly (i.e., the user can better avoid obstacles and/or other dangers in the walkway).
+
+We have already seen that there was no fatigue or learning effect between blocks, so we can just look at the game types and blocks effects on awareness.
+
+#### 1st level of awareness: shapes observation
+
+The first level of awareness would be simply noticing any shapes while walking and playing the game.
+
+```{r message=FALSE, warning=FALSE}
+level1_blocks = raw_data %>% filter(block != 1) %>% select(participant, block, shapes) %>% spread(block, shapes)
+level1_blocks$`2` = factor(level1_blocks$`2`)
+level1_blocks$`3` = factor(level1_blocks$`3`)
+level1_games = raw_data %>% filter(block != 1) %>% select(participant, game, shapes) %>% spread(game, shapes)
+level1_games$Camera = factor(level1_games$Camera)
+level1_games$Regular = factor(level1_games$Regular)
+```
+```{r message=FALSE, warning=FALSE}
+kable(level1_blocks)
+kable(level1_games)
+```
+
+Results show that shapes were not noticed only once, for both game types (regular and with camera) and blocks. Let's see the Wilcoxon-signed rank tests (non-parametric, within-group, 2 levels):
+ 
+```{r message=FALSE, warning=FALSE}
+wilcox.test(as.integer(level1_blocks$`2`), as.integer(level1_blocks$`3`), paired = TRUE)
+wilcox.test(as.integer(level1_games$Regular), as.integer(level1_games$Camera), paired = TRUE)
+```
+
+Wilcoxon signed rank tests show that there is no significant difference between game types and blocks, so we can conclude that level 1 awareness was the same for both.
+
+#### 2nd level of awareness: shapes identification
+
+The second (higher) level of awareness would be identifying correctly what kind of shapes were present in the obstacles. Participants were supposed to identify four types of shapes: circles, squares, triangles and stars. Let's see what was the mean/median values of correctly identified shapes for blocks and game types.
+
+```{r message=FALSE, warning=FALSE}
+level2_data = raw_data %>% filter(block != 1)
+level2_data$identified = as.integer(level2_data$squares == "YES") + 
+                          as.integer(level2_data$circles == "YES") + 
+                          as.integer(level2_data$triangles == "YES") + 
+                          as.integer(level2_data$stars == "YES")
+level2_data$identified = as.double(level2_data$identified)
+level2_data$block = factor(level2_data$block)
+level2_data$game = factor(level2_data$game)
+
+level2_blocks = level2_data %>% select(participant, block, identified) %>% spread(block, identified)
+level2_games = level2_data %>% select(participant, game, identified) %>% spread(game, identified)
+
+blocks_identified = level2_data %>% group_by(block) %>% summarise(mean_identified = mean(identified), sd = sd(identified))
+games_identified = level2_data %>% group_by(game) %>% summarise(mean_identified = mean(identified), sd = sd(identified))
+```
+
+```{r message=FALSE, warning=FALSE}
+kable(blocks_identified)
+boxplot(identified ~ block, data = level2_data, xlab = "Block", ylab = "Shapes identified")
+points(1:2, blocks_identified$mean_identified, col = "red")
+
+kable(games_identified)
+boxplot(identified ~ game, data = level2_data, xlab = "Game", ylab = "Shapes identified")
+points(1:2, games_identified$mean_identified, col = "red")
+```
+
+Mean values show that users correctly identified more shapes in block 3, but shapes identification was similar for both game types. Let's run Wilcoxon signed-rank tests on both to evaluate effect significance (non-parametric, within-group, 2 levels).
+
+```{r message=FALSE, warning=FALSE}
+wilcox.test(level2_blocks$`2`, level2_blocks$`3`, paired = TRUE)
+wilcox.test(level2_games$Regular, level2_games$Camera, paired = TRUE)
+```
+
+Wilcoxon signed-rank tests show that there is a signifficant effect on block (p<0.05), but not on game type. This indicates that users were more aware of shapes on the second time they were running the experiment, but the game type did not have a significant effect on identifying shapes.
+
+#### 3rd level of awareness: number of shapes
+
+The third (highest) level of awareness would be correctly counting the numbers of each shape laid on the objects. In the first block there were 3 squares, 3 circles, 2 triangles and 2 stars. In the second block there were 4 squares, 2 circles, 1 triangle and 3 stars.  Participants were supposed to enumerate how many shapes of each they had noticed. Let's see what was the mean/median value of erros in counting shapes for blocks and game types.
+
+```{r message=FALSE, warning=FALSE}
+level3_block2 = raw_data %>% filter(block == 2)
+level3_block2$count_errors = abs(3 - as.numeric(level3_block2$n_squares)) +
+                              abs(3 - as.numeric(level3_block2$n_circles)) +
+                              abs(2 - as.numeric(level3_block2$n_triangles)) +
+                              abs(2 - as.numeric(level3_block2$n_stars))
+level3_block2 = level3_block2 %>% select(participant, block, game, count_errors)
+
+level3_block3 = raw_data %>% filter(block == 3)
+level3_block3$count_errors = abs(4 - as.numeric(level3_block3$n_squares)) +
+                              abs(2 - as.numeric(level3_block3$n_circles)) +
+                              abs(1 - as.numeric(level3_block3$n_triangles)) +
+                              abs(3 - as.numeric(level3_block3$n_stars))
+level3_block3 = level3_block3 %>% select(participant, block, game, count_errors)
+
+level3_data = rbind(level3_block2, level3_block3)
+level3_blocks = level3_data %>% select(participant, block, count_errors) %>% spread(block, count_errors)
+level3_games = level3_data %>% select(participant, game, count_errors) %>% spread(game, count_errors)
+
+blocks_count_errors = level3_data %>% group_by(block) %>% summarise(mean_count_errors = mean(count_errors), sd = sd(count_errors))
+games_count_errors = level3_data %>% group_by(game) %>% summarise(mean_count_errors = mean(count_errors), sd = sd(count_errors))
+```
+
+```{r message=FALSE, warning=FALSE}
+kable(blocks_count_errors)
+
+boxplot(count_errors ~ block, data = level3_data, xlab = "Block", ylab = "Shapes count errors")
+points(1:2, blocks_count_errors$mean_count_errors, col = "red")
+
+kable(games_count_errors)
+a = boxplot(count_errors ~ game, data = level3_data, xlab = "Game", ylab = "Shapes count errors")
+points(1:2, games_count_errors$mean_count_errors, col = "red")
+```
+
+Mean values show that users had less count errors in block 3, but again count errors were similar for both game types. Let's run Wilcoxon signed-rank tests on both to evaluate effect significance (non-parametric, within-group, 2 levels).
+
+```{r message=FALSE, warning=FALSE}
+wilcox.test(level3_blocks$`2`, level3_blocks$`3`, paired = TRUE)
+wilcox.test(level3_games$Regular, level3_games$Camera, paired = TRUE)
+```
+
+Wilcoxon signed-rank tests show that there is a signifficant effect on block (p<0.05), but not on game type. This indicates again that users were more aware of shapes on the second time they were running the experiment, but the game type did not have a significant effect on correclty counting shapes.
