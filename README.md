@@ -1,6 +1,14 @@
-# Experiment with the camera on the background of mobile phone tasks
+# Augmented reality to improve surrounding awareness of mobile phone users
 
 This is a modified version of the game [FrozenBubble](https://github.com/videogameboy76/frozenbubbleandroid) to run an HCI experiment. We are researching the effect of the camera background on the user's awareness of its surroundings.
+
+The description or our technique and experiment tasks can be seen on this video: https://www.youtube.com/watch?v=mLMNbknCOt4.
+
+Experiment data, evaluation and full paper can be found in the [experiment](https://github.com/cassianomonteiro/cs-889-project/tree/master/experiment) folder.
+
+Presentation slides with results: https://docs.google.com/presentation/d/1zX1z0NL0qYRoMVOGXmmb7gtwOd6j_gIH9GSon7PzpPs/edit?usp=sharing.
+
+DISCLAIMER: This research work HAS NOT BEEN PEER REVIEWED.
 
 You can get the original game on the stores below.
 
