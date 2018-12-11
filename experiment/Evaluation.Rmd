@@ -81,7 +81,18 @@ shapiro.test(regular_data$time)
 shapiro.test(camera_data$time)
 ```
 
-Shapiro tests show that times for both **block** and **game** follow normal distributions (p>0.1). Let's do a pairwise comparison of time between blocks and games using parametric tests (within-group, 2 levels).
+Shapiro tests show that times for both **block** and **game** follow normal distributions (p>0.1). We should run ANOVA on both to evaluate any significant effects (within-group, 3 levels).
+
+```{r message=FALSE, warning=FALSE}
+anova_block = ezANOVA(raw_data, dv=.(time), wid=.(participant), within=.(block), detailed=TRUE)
+anova_game = ezANOVA(raw_data, dv=.(time), wid=.(participant), within=.(game), detailed=TRUE)
+```
+```{r message=FALSE, warning=FALSE}
+kable(anova_apa(anova_block, sph_corr ="gg", print=FALSE))
+kable(anova_apa(anova_game, sph_corr ="gg", print=FALSE))
+```
+
+Anova tests show significant effects on both **block** and **game** (p<0.001). For further investigation, let's do a pairwise comparison of time between blocks and games using parametric tests (within-group, 2 levels).
 
 ```{r message=FALSE, warning=FALSE}
 attach(raw_data)
@@ -151,7 +162,7 @@ boxplot(errors ~ block, data = raw_data, xlab = "Block", ylab = "Errors")
 points(1:3, block_errors$mean_errors, col = "red")
 
 kable(game_errors)
-boxplot(errors ~ game, data = raw_data, xlab = "Block", ylab = "Errors")
+boxplot(errors ~ game, data = raw_data, xlab = "Game", ylab = "Errors")
 points(1:3, game_errors$mean_errors, col = "red")
 ```
 
