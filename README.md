@@ -8,7 +8,7 @@ Experiment data, evaluation and full paper can be found in the [experiment](http
 
 Presentation slides with results: https://docs.google.com/presentation/d/1zX1z0NL0qYRoMVOGXmmb7gtwOd6j_gIH9GSon7PzpPs/edit?usp=sharing.
 
-DISCLAIMER: This research work HAS NOT BEEN PEER REVIEWED.
+DISCLAIMER: This research work HAS NOT BEEN PEER REVIEWED. This project was part of credit requirements for the CS-889 course at the University of Waterloo, Fall 2018.
 
 You can get the original game on the stores below.
 
